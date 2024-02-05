@@ -26,6 +26,9 @@ jobs:
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
 
+    - name: Get Short GitHub SHA and Save in Environment Variable
+      run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
     - name: Build, tag, and push the image to Amazon ECR
       id: build-image
       env:
@@ -39,12 +42,20 @@ jobs:
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . || exit 1
         echo "Docker image built successfully."
     
-        echo "Tagging Docker image..."
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || exit 1
+        echo "Tagging Docker image with SHA"
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_GITHUB_SHA
         echo "Docker image tagged successfully."
     
         echo "Pushing Docker image to ECR..."
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG || exit 1
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_GITHUB_SHA 
+        echo "Docker image pushed successfully."
+
+        echo "Tagging Docker image with latest"
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "Docker image tagged successfully."
+    
+        echo "Pushing Docker image to ECR..."
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG 
         echo "Docker image pushed successfully."
     
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
