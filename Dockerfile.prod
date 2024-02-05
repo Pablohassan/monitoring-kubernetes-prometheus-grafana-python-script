@@ -1,8 +1,0 @@
-FROM tiangolo/uvicorn-gunicorn:python3.11-slim
-
-# Copy requirements.txt and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy the rest of your application files
-COPY . .
