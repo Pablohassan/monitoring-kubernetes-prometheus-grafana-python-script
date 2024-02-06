@@ -51,3 +51,9 @@ jobs:
 
     - name: Update kube config
       run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region ${{ vars.AWS_DEFAULT_REGION }}
+
+      name: Clone charts HELM
+      run: |
+
+        git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
+        git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
