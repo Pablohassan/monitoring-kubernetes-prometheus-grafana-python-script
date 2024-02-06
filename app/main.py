@@ -45,6 +45,7 @@ async def startup():
         await database.connect()
     # create a dummy entry
     await User.objects.get_or_create(email="test@test.com")
+    await User.objects.get_or_create(email="coucou@datascientest.com")
     # Add /metrics route for Prometheus scraping
     app.add_route("/metrics", make_asgi_app())
 

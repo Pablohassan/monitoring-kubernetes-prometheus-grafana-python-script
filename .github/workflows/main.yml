@@ -34,9 +34,6 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: latest
       run: |
-        set -x
-        # Build a docker container and push it to ECR
-        
         echo "Building Docker image..."
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_GITHUB_SHA . 
         echo "Docker image built successfully."
@@ -45,8 +42,6 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY --all-tags
         echo "Docker image pushed successfully."
     
-        #echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
   deploy_dev:
     name: deploy_dev
     needs: [build]
@@ -68,12 +63,6 @@ jobs:
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
 
-    - name: Install HELM
-      run: |
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
-
     - name: Install Charts db and Fastapi - dev
       run: |
         helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
@@ -81,7 +70,7 @@ jobs:
   
   deploy_prod:
     name: deploy_prod
-    needs: [build,deploy_dev]
+    needs: [deploy_dev]
     environment: production
     runs-on: ubuntu-latest
 
@@ -100,12 +89,6 @@ jobs:
       run: |
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
-
-   # - name: Install HELM
-   #   run: |
-   #     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-   #     chmod 700 get_helm.sh
-   #     ./get_helm.sh
 
     - name: Install Charts db and Fastapi - dev
       run: |
