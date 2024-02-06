@@ -54,13 +54,17 @@ jobs:
 
     - name: Clone charts HELM
       run: |
-
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
 
     - name: Install HELM
       run: |
-
         curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
         chmod 700 get_helm.sh
         ./get_helm.sh
+
+    - name: Install Charts db and Fastapi - dev
+      run: |
+        helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
+        helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
+        
