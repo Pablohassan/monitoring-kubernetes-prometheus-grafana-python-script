@@ -65,6 +65,7 @@ jobs:
 
     - name: Install Charts db and Fastapi - dev
       run: |
+        sed -i "s+tag.*+tag: $SHORT_GITHUB_SHA+g" helm-chart-fastapi/values.yaml
         helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
         helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
   
