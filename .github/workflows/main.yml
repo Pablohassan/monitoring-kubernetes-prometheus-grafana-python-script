@@ -1,14 +1,12 @@
 on:
   push:
     branches: [ main ]
-  #pull_request:
-    #branches: [ main ]
 
 name: Deploy New Version App FastApi
 
 jobs:
-  deploy:
-    name: Deploy
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
@@ -49,6 +47,12 @@ jobs:
     
         #echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
+  deploy_dev:
+    name: deploy_dev
+    needs: [build]
+    runs-on: ubuntu-latest
+
+    steps:
     - name: Update kube config
       run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region ${{ vars.AWS_DEFAULT_REGION }}
 
@@ -67,4 +71,30 @@ jobs:
       run: |
         helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
         helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
+  
+  deploy_prod:
+    name: deploy_prod
+    needs: [build,deploy_dev]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Update kube config
+      run: aws eks update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }} --region ${{ vars.AWS_DEFAULT_REGION }}
+
+    - name: Clone charts HELM
+      run: |
+        git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
+        git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
+
+    - name: Install HELM
+      run: |
+        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+        chmod 700 get_helm.sh
+        ./get_helm.sh
+
+    - name: Install Charts db and Fastapi - dev
+      run: |
+        helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
+        helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
+        
         
