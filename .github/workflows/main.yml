@@ -48,8 +48,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
       
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -65,14 +63,10 @@ jobs:
       run: |
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
-        
-    - name: Get Short GitHub SHA and Save in Environment Variable
-      run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
+      
     - name: Install Charts db and Fastapi - dev
       run: |
-        sed -i "s+tag.*+tag: $SHORT_GITHUB_SHA+g" helm-chart-fastapi/values_dev.yaml
-        cat helm-chart-fastapi/values_dev.yaml
+        
         helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
         helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
   
@@ -83,9 +77,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      
+    
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -101,12 +93,8 @@ jobs:
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
 
-    - name: Get Short GitHub SHA and Save in Environment Variable
-      run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-
     - name: Install Charts db and Fastapi - prod
       run: |
-        sed -i "s+tag.*+tag: $SHORT_GITHUB_SHA+g" helm-chart-fastapi/values.yaml
         helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace prod
         helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values.yaml --namespace prod
         
