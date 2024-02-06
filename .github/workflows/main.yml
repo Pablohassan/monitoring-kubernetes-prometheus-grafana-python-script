@@ -34,9 +34,6 @@ jobs:
         ECR_REPOSITORY: ${{ secrets.REPO_NAME }}
         IMAGE_TAG: latest
       run: |
-        set -x
-        # Build a docker container and push it to ECR
-        
         echo "Building Docker image..."
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:$SHORT_GITHUB_SHA . 
         echo "Docker image built successfully."
@@ -73,7 +70,7 @@ jobs:
   
   deploy_prod:
     name: deploy_prod
-    needs: [build,deploy_dev]
+    needs: [deploy_dev]
     environment: production
     runs-on: ubuntu-latest
 
