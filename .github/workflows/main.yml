@@ -82,6 +82,7 @@ jobs:
   deploy_prod:
     name: deploy_prod
     needs: [build,deploy_dev]
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
@@ -100,11 +101,11 @@ jobs:
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
 
-    - name: Install HELM
-      run: |
-        curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-        chmod 700 get_helm.sh
-        ./get_helm.sh
+   # - name: Install HELM
+   #   run: |
+   #     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+   #     chmod 700 get_helm.sh
+   #     ./get_helm.sh
 
     - name: Install Charts db and Fastapi - dev
       run: |
