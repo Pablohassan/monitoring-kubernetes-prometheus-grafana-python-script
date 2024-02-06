@@ -11,7 +11,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -49,7 +49,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -84,7 +84,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -101,9 +101,13 @@ jobs:
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-db.git
         git clone https://github.com/Datascientest-DevOps-2024/helm-chart-fastapi.git
 
-    - name: Install Charts db and Fastapi - dev
+    - name: Get Short GitHub SHA and Save in Environment Variable
+      run: echo "SHORT_GITHUB_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
+    - name: Install Charts db and Fastapi - prod
       run: |
-        helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace dev
-        helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values_dev.yaml --namespace dev
+        sed -i "s+tag.*+tag: $SHORT_GITHUB_SHA+g" helm-chart-fastapi/values.yaml
+        helm upgrade --install db ./helm-chart-db --values=helm-chart-db/values.yaml --namespace prod
+        helm upgrade --install fastapi ./helm-chart-fastapi --values=helm-chart-fastapi/values.yaml --namespace prod
         
         
