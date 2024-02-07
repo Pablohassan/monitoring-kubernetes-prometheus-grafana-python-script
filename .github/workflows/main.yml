@@ -45,6 +45,9 @@ jobs:
   deploy_dev:
     name: deploy_dev
     needs: [build]
+    environment: 
+      name: dev
+      url: dev1.fastapi.cloudns.org
     runs-on: ubuntu-latest
 
     steps:
@@ -73,7 +76,9 @@ jobs:
   deploy_prod:
     name: deploy_prod
     needs: [deploy_dev]
-    environment: production
+    environment: 
+      name: production
+      url: prod.fastapi.cloudns.org
     runs-on: ubuntu-latest
 
     steps:
