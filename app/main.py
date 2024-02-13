@@ -49,7 +49,7 @@ async def startup():
     # create a dummy entry
     await User.objects.get_or_create(email="test@test.com")
     await User.objects.get_or_create(email="coucou@antoine.com")
-    #await User.objects.get_or_create(email="hello@datascientest.com")
+    await User.objects.get_or_create(email="hello@datascientest.com")
 
 
 @app.on_event("shutdown")
