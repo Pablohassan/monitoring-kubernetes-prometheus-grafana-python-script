@@ -48,6 +48,8 @@ async def startup():
         await database.connect()
     # create a dummy entry
     await User.objects.get_or_create(email="test@test.com")
+    await User.objects.get_or_create(email="coucou@antoine.com")
+    #await User.objects.get_or_create(email="hello@datascientest.com")
 
 
 @app.on_event("shutdown")
@@ -60,4 +62,3 @@ async def shutdown():
 async def get_metrics():
     return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
-#comment
